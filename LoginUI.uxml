@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="commonstyles.uss" />
+    
+    <ui:VisualElement class="panel">
+        <ui:Label text="Login" class="title" />
+
+        <ui:TextField label="Email" name="emailField" />
+        <ui:TextField label="Password" name="passwordField" secret="true" />
+
+        <ui:Button text="Login" name="loginBtn" />
+        <ui:Button text="Register Instead" name="toRegisterBtn" class="link-button" />
+    </ui:VisualElement>
+</ui:UXML>

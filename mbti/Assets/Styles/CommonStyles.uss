@@ -1,0 +1,78 @@
+.panel {
+    background-color: rgba(0, 30, 60, 0.85);
+    padding: 40px;
+    border-radius: 20px;
+    width: 360px;
+    align-self: center;
+    margin-top: 80px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    font-size: 32px;
+    color: #4FC3F7;
+    margin-bottom: 25px;
+    unity-text-align: middle-center;
+}
+
+TextField {
+    width: 280px;
+    margin-bottom: 15px;
+}
+
+Button {
+    width: 280px;
+    background-color: #2196F3;
+    color: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    unity-font-style: bold;
+}
+
+.link-button {
+    background-color: transparent;
+    color: #90CAF9;
+    border: 0px;
+    margin-top: 10px;
+    text-decoration: underline;
+    unity-text-align: middle-center;
+}
+
+
+.citizen-card {
+    width: 120px;
+    height: 150px;
+    border-radius: 12px;
+    margin: 12px;
+    padding: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+
+.citizen-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+#type-label {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.building-card {
+    width: 180px;
+    height: 220px;
+    border-radius: 12px;
+    margin: 15px;
+    padding: 20px;
+    align-items: center;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 2px solid #EAEAEA;
+}
