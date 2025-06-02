@@ -28,6 +28,7 @@ public class LoginManager : MonoBehaviour
 
         if (isLoggedIn)
         {
+            mainUI.SetActive(true);
             registerDisplay.SetActive(false);
             loginDisplay.SetActive(false);
         }
@@ -52,10 +53,6 @@ public class LoginManager : MonoBehaviour
         string passwordText = registerPasswordInput.text;
         
         await RegisterWithEmailPassword(emailText, passwordText);
-
-        mainUI.SetActive(true);
-        registerDisplay.SetActive(false);
-        loginDisplay.SetActive(false);
     }
 
     public async void Login()
@@ -64,10 +61,6 @@ public class LoginManager : MonoBehaviour
         string passwordText = loginPasswordInput.text;
 
         await LoginWithEmailPassword(emailText, passwordText);
-
-        mainUI.SetActive(true);
-        registerDisplay.SetActive(false);
-        loginDisplay.SetActive(false);
     }
 
     async Task RegisterWithEmailPassword(string email, string password)
@@ -76,6 +69,9 @@ public class LoginManager : MonoBehaviour
         {
             await AuthenticationService.Instance.SignUpWithUsernamePasswordAsync(email, password);
             Debug.Log("Registration successful");
+            mainUI.SetActive(true);
+            registerDisplay.SetActive(false);
+            loginDisplay.SetActive(false);
         }
         catch (AuthenticationException e)
         {
@@ -93,6 +89,9 @@ public class LoginManager : MonoBehaviour
         {
             await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(email, password);
             Debug.Log("Login successful");
+            mainUI.SetActive(true);
+            registerDisplay.SetActive(false);
+            loginDisplay.SetActive(false);
         }
         catch (AuthenticationException e)
         {
