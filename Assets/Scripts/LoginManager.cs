@@ -7,56 +7,112 @@ using System.Threading.Tasks;
 
 public class LoginManager : MonoBehaviour
 {
-    public GameObject loginPanel, registerPanel, notificationPanel;
+    [SerializeField] private GameObject mainUI = default;
 
-    public TMP_InputField loginEmail, loginPassword, registerEmail, registerPassword;
+    [SerializeField] private GameObject registerDisplay = default;
+    [SerializeField] private TMP_InputField registerEmailInput = default;
+    [SerializeField] private TMP_InputField registerPasswordInput = default;
 
-    public TMP_Text notifTitleText, notifMessageText;
+    [SerializeField] private GameObject loginDisplay = default;
+    [SerializeField] private TMP_InputField loginEmailInput = default;
+    [SerializeField] private TMP_InputField loginPasswordInput = default;
+
+    [SerializeField] private TextMeshProUGUI errorMessageText = default;
+
+    public float displayErrorDuration = 5f;
+
+    async void Start()
+    {
+        await UnityServices.InitializeAsync();
+        bool isLoggedIn = AuthenticationService.Instance.IsSignedIn;
+
+        if (isLoggedIn)
+        {
+            registerDisplay.SetActive(false);
+            loginDisplay.SetActive(false);
+        }
+    }
+
     public void OpenLoginPanel()
     {
-        loginPanel.SetActive(true);
-        registerPanel.SetActive(false);
-        notificationPanel.SetActive(false);
+        loginDisplay.SetActive(true);
+        registerDisplay.SetActive(false);
+        mainUI.SetActive(false);
     }
 
     public void OpenRegisterPanel()
     {
-        loginPanel.SetActive(false);
-        registerPanel.SetActive(true);
-        notificationPanel.SetActive(false);
+        loginDisplay.SetActive(false);
+        registerDisplay.SetActive(true);
+        mainUI.SetActive(false);
+    }
+    public async void Register()
+    {
+        string emailText = registerEmailInput.text;
+        string passwordText = registerPasswordInput.text;
+        
+        await RegisterWithEmailPassword(emailText, passwordText);
+
+        mainUI.SetActive(true);
+        registerDisplay.SetActive(false);
+        loginDisplay.SetActive(false);
     }
 
-    public void LoginUser()
+    public async void Login()
     {
-        // Checks if the email or password field for login page is empty
-        if (string.IsNullOrEmpty(loginEmail.text) || string.IsNullOrEmpty(loginPassword.text))
+        string emailText = loginEmailInput.text;
+        string passwordText = loginPasswordInput.text;
+
+        await LoginWithEmailPassword(emailText, passwordText);
+
+        mainUI.SetActive(true);
+        registerDisplay.SetActive(false);
+        loginDisplay.SetActive(false);
+    }
+
+    async Task RegisterWithEmailPassword(string email, string password)
+    {
+        try
         {
-            Debug.LogError("Email or Password cannot be empty.");
-            showNotificationMessage("Error", "Email or Password cannot be empty.");
-            return;
+            await AuthenticationService.Instance.SignUpWithUsernamePasswordAsync(email, password);
+            Debug.Log("Registration successful");
         }
-
-        // Do login
-    }
-
-    public void RegisterUser()
-    {
-        // Checks if the email or password field for login page is empty
-        if (string.IsNullOrEmpty(registerEmail.text) || string.IsNullOrEmpty(registerPassword.text))
+        catch (AuthenticationException e)
         {
-            Debug.LogError("Email or Password cannot be empty.");
-            showNotificationMessage("Error", "Email or Password cannot be empty.");
-            return;
+            ShowErrorMessage(e.Message);
         }
-
-        // Do registration
+        catch (RequestFailedException e)
+        {
+            ShowErrorMessage(e.Message);
+        }
     }
 
-    private void showNotificationMessage(string title, string message)
+    async Task LoginWithEmailPassword(string email, string password)
     {
-        notifTitleText.text = "" + title;
-        notifMessageText.text = "" + message;
+        try
+        {
+            await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(email, password);
+            Debug.Log("Login successful");
+        }
+        catch (AuthenticationException e)
+        {
+            ShowErrorMessage(e.Message);
+        }
+        catch (RequestFailedException e)
+        {
+            ShowErrorMessage(e.Message);
+        }
+    }
 
-        notificationPanel.SetActive(true);
+    public void ShowErrorMessage(string message)
+    {
+        errorMessageText.text = message;
+        errorMessageText.gameObject.SetActive(true);
+        Invoke(nameof(HideErrorMessage), displayErrorDuration);
+    }
+
+    private void HideErrorMessage()
+    {
+        errorMessageText.gameObject.SetActive(false);
     }
 }
