@@ -766,11 +766,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 698be05d-69ec-423a-9d39-e0ca8ec95df7
+  cloudProjectId: e521f50c-721d-4981-92c8-e29185dddc7b
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: mbti
-  organizationId: e1375550
+  projectName: MBTInova
+  organizationId: ash-l7
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
