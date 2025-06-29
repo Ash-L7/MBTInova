@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 141347344}
   - component: {fileID: 141347345}
   m_Layer: 4
-  m_Name: Triangle
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridSize: 1
-  infrastructureToPlaceDown: {fileID: 5497627370094775609, guid: a0494c014e77bec43a2fda50e675536e, type: 3}
+  infrastructureToPlaceDown: {fileID: 1303337769108908496, guid: 23d8ccab93074d24ca06a3c1281d36f0, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,7 +302,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.52156866, g: 0.74509805, b: 0.54901963, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
