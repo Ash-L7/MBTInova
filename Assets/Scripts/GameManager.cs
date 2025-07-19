@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
     // Debug UI
     public void LoadTestScenario()
     {
-        citizenManager.CreateCitizen("INTP");
+        citizenManager.CreateCitizen();
         cityManager.PlaceBuilding("MindLab", new Vector2Int(1, 1));
         eventManager.ForceTrigger("INTP_vs_ESFJ");
     }
