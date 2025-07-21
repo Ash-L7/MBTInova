@@ -1,0 +1,33 @@
+{
+  "id": "ideological_conflict_event_01",
+  "title": "Conflict at the Council",
+  "description": "A heated debate erupts in the city council.",
+  "category": "ideological_conflict",
+  "conditions": [ "NT", "Laboratory" ],
+  "cooldownTicks": 30,
+  "rarity": 1.0,
+  "choices": [
+    {
+      "text": "Side with the Rationalists",
+      "visibilityCondition": "",
+      "effects": [
+        {
+          "type": "resource_change",
+          "target": "Science",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "text": "Remain Neutral",
+      "visibilityCondition": "",
+      "effects": [
+        {
+          "type": "buff",
+          "target": "Stability",
+          "value": 5
+        }
+      ]
+    }
+  ]
+}

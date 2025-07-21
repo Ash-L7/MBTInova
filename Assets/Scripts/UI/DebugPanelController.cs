@@ -25,7 +25,10 @@ public class DebugPanelController : MonoBehaviour
 
         eventButton.onClick.AddListener(() =>
         {
-            GameManager.Instance.eventManager.ForceTrigger("INTP_vs_ESFJ");
+
+            //GameManager.Instance.eventManager.ForceTrigger("idealism_wave");
+            UpdateResources();
+
         });
 
         UpdateResources();

@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
 
     public GameState currentState = GameState.Playing;
 
+    private int manualTickCount = 0;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -31,11 +33,27 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (currentState == GameState.Playing)
+        if (currentState != GameState.Playing)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            cityManager.UpdateProduction();
-            citizenManager.UpdateCitizens();
-            eventManager.CheckTriggers();
+            ManualTick();
+        }
+    }
+
+    public void ManualTick()
+    {
+        manualTickCount++;
+        Debug.Log($"Manual Tick {manualTickCount}");
+
+        cityManager.Tick();
+        citizenManager.UpdateCitizens();
+        cityData.triggeredEvents.Clear();
+
+        if (manualTickCount % 5 == 0)
+        {
+            //eventManager.CheckTriggers();
         }
     }
 
@@ -46,18 +64,10 @@ public class GameManager : MonoBehaviour
 
         cityManager.Init(cityData);
         citizenManager.Init(cityData);
-        eventManager.Init(cityData);
+        //eventManager.Init(cityData);
         saveManager.Init(cityData);
 
         Debug.Log("Game initialized.");
-    }
-
-    // Debug UI
-    public void LoadTestScenario()
-    {
-        citizenManager.CreateCitizen("INTP");
-        cityManager.PlaceBuilding("MindLab", new Vector2Int(1, 1));
-        eventManager.ForceTrigger("INTP_vs_ESFJ");
     }
 
     public void SpendResource(string type, int amount)

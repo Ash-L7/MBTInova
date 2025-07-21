@@ -9,6 +9,10 @@ public class CityData
     public List<CitizenData> citizens = new List<CitizenData>();
     public List<BuildingData> buildings = new List<BuildingData>();
     public List<string> triggeredEvents = new List<string>();
+    public int temperamentNF = 100;
+
+    public List<string> activeBuffs = new();
+    public List<string> systemUnlocks = new();
 
     public int currentDay = 0;
 
@@ -18,6 +22,8 @@ public class CityData
         citizens.Clear();
         buildings.Clear();
         triggeredEvents.Clear();
+        activeBuffs.Clear();
+        systemUnlocks.Clear();
         currentDay = 0;
     }
 }
