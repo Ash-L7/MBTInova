@@ -8,6 +8,7 @@ public class DebugPanelController : MonoBehaviour
     public Button recruitButton;
     public Button buildButton;
     public Button eventButton;
+    public Button nextDayButton;
 
     [Header("UI Display")]
     public TextMeshProUGUI resourceDisplay;
@@ -18,13 +19,14 @@ public class DebugPanelController : MonoBehaviour
         recruitButton.onClick.AddListener(OnRecruitButtonClicked);
         buildButton.onClick.AddListener(OnBuildButtonClicked);
         eventButton.onClick.AddListener(OnEventButtonClicked);
+        nextDayButton.onClick.AddListener(OnNextDayClicked);
 
         UpdateResources();
     }
 
-    void UpdateResources()
+    public void UpdateResources()
     {
-        var r = GameManager.Instance.cityData.resources;
+        var r = ResourceManager.Instance.resourceData;
         resourceDisplay.text = $"Money: {r.money}\nScience: {r.sciencePoints}\nFood: {r.food}\nEnergy: {r.energy}";
     }
 
@@ -32,10 +34,13 @@ public class DebugPanelController : MonoBehaviour
     {
         if (citizenListDisplay != null)
             citizenListDisplay.text = listText;
+
+        UpdateResources();
     }
 
     void OnRecruitButtonClicked()
     {
+        Debug.Log(">>> Recruit clicked");
         GameManager.Instance.citizenManager.CreateCitizen();
         UpdateResources();
     }
@@ -50,4 +55,14 @@ public class DebugPanelController : MonoBehaviour
     {
         GameManager.Instance.eventManager.ForceTrigger("INTP_vs_ESFJ");
     }
+
+
+    void OnNextDayClicked()
+    {
+        Debug.Log(">>> NextDay clicked");
+        GameManager.Instance.citizenManager.UpdateCitizens();
+        UpdateResources();
+    }
+
+
 }

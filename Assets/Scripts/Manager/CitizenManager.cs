@@ -15,6 +15,8 @@ public class CitizenManager : MonoBehaviour
         "ISFP","ESFP","INTJ","ENTJ"
     };
 
+    public int recruitCost = 100;
+
     public void Init(CityData data)
     {
         cityData = data;
@@ -22,13 +24,21 @@ public class CitizenManager : MonoBehaviour
 
     public void CreateCitizen()
     {
-        string mbtiType = mbtiPool[Random.Range(0, mbtiPool.Length)];
-        CitizenData newCitizen = new CitizenData(mbtiType);
-        cityData.citizens.Add(newCitizen);
+        if (ResourceManager.Instance.SpendMoney(recruitCost))
+        {
+            string mbtiType = mbtiPool[Random.Range(0, mbtiPool.Length)];
+            CitizenData newCitizen = new CitizenData(mbtiType);
+            newCitizen.currentBuildingID = "DummyBuilding"; // just for testinggggg
+            cityData.citizens.Add(newCitizen);
 
-        Debug.Log($"Created: {newCitizen.mbtiType} - {newCitizen.temperament} - {newCitizen.dominantFunction}/{newCitizen.auxiliaryFunction}");
+            Debug.Log($"Created: {newCitizen.mbtiType} - {newCitizen.temperament} - {newCitizen.dominantFunction}/{newCitizen.auxiliaryFunction}");
 
-        UpdateCitizensUI();
+            UpdateCitizensUI();
+        }
+        else
+        {
+            Debug.Log("[CitizenManager] Not enough money to recruit a citizen!");
+        }
     }
 
     public BuildingDomain ResolveDomain(string temperament)
@@ -87,15 +97,15 @@ public class CitizenManager : MonoBehaviour
         ApplyBuff(citizen, building);
         UpdateCitizensUI();
     }
-    
+
     public void UpdateCitizensUI()
     {
         StringBuilder sb = new StringBuilder();
         foreach (var c in cityData.citizens)
         {
-            sb.AppendLine($"{c.mbtiType} - {c.temperament} - {c.dominantFunction}/{c.auxiliaryFunction} - Satisfaction: {c.jobSatisfaction}");
+            sb.AppendLine($"{c.mbtiType} - {c.currentState} - Satisfaction: {c.jobSatisfaction} - HighSatDays: {c.highSatisfactionDays}");
         }
-     
+
         if (debugPanel != null)
         {
             debugPanel.UpdateCitizenList(sb.ToString());
@@ -104,51 +114,50 @@ public class CitizenManager : MonoBehaviour
 
     public void UpdateCitizenState(CitizenData citizen)
     {
-        switch (citizen.currentState)
+        Debug.Log($"[FSM] State={citizen.currentState} SatDays={citizen.highSatisfactionDays}");
+
+        if (citizen.currentState == CitizenState.Idle)
         {
-            case CitizenState.Idle:
-                if (!string.IsNullOrEmpty(citizen.currentBuildingID))
-                {
-                    citizen.currentState = CitizenState.Working;
-                    Debug.Log($"{citizen.mbtiType} start working");
-                }
-                break;
+            if (!string.IsNullOrEmpty(citizen.currentBuildingID))
+            {
+                citizen.currentState = CitizenState.Working;
+                Debug.Log("==> FSM: Switch to Working");
+            }
+            return;
+        }
 
-            case CitizenState.Working:
-                if (citizen.jobSatisfaction >= 80)
-                    citizen.highSatisfactionDays++;
-                else
-                    citizen.highSatisfactionDays = 0;
+        if (citizen.currentState == CitizenState.Working)
+        {
+            if (citizen.jobSatisfaction >= 80)
+            {
+                citizen.highSatisfactionDays++;
+                Debug.Log("==> FSM: Add SatDay");
+            }
+            else
+            {
+                citizen.highSatisfactionDays = 0;
+                Debug.Log("==> FSM: Reset SatDay");
+            }
 
-                if (citizen.highSatisfactionDays >= 3)
-                {
-                    citizen.currentState = CitizenState.Promoted;
-                    citizen.isPromoted = true;
-                    citizen.titleName = "Architect of Synergy";
+            if (citizen.highSatisfactionDays >= 3)
+            {
+                citizen.currentState = CitizenState.Promoted;
+                Debug.Log("==> FSM: PROMOTED!");
+            }
 
-                    BuildingData building = cityData.buildings.Find(b => b.buildingID == citizen.currentBuildingID);
-                    if (building != null)
-                    {
-                        building.productionMultiplier += 0.3f;
-                        Debug.Log($"{citizen.mbtiType} upgraded！output：{building.buildingID} +0.3");
-                    }
-                }
-                break;
+            return;
+        }
 
-            case CitizenState.Promoted:
-                citizen.jobSatisfaction += 5;
-
-                if (citizen.functionStats.ContainsKey(citizen.dominantFunction))
-                {
-                    citizen.functionStats[citizen.dominantFunction] += 1;
-
-                    if (citizen.functionStats[citizen.dominantFunction] > 100)
-                        citizen.functionStats[citizen.dominantFunction] = 100;
-                }
-
-                break;
+        if (citizen.currentState == CitizenState.Promoted)
+        {
+            Debug.Log("==> FSM: Promoted tick +5 sat");
+            citizen.jobSatisfaction += 5;
+            return;
         }
     }
+
+
+
 
     public void UpdateCitizens()
     {
