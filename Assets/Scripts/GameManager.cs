@@ -77,6 +77,19 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
+
+    public void NextDayTick()
+    {
+        Debug.Log("=== NextDay Start ===");
+
+        citizenManager.UpdateCitizens();    // update fsm
+        cityManager.UpdateProduction();     // update production
+        //resourceManager.ApplyDailyChanges();
+        eventManager.CheckTriggers();
+
+        Debug.Log("=== NextDay End ===");
+    }
+
 }
 
 public enum GameState

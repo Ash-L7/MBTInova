@@ -60,7 +60,7 @@ public class DebugPanelController : MonoBehaviour
     void OnNextDayClicked()
     {
         Debug.Log(">>> NextDay clicked");
-        GameManager.Instance.citizenManager.UpdateCitizens();
+        GameManager.Instance.NextDayTick();
         UpdateResources();
     }
 
