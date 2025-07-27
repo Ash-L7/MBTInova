@@ -1,5 +1,7 @@
-using UnityEngine;
 using TMPro;
+using UnityEditor.SearchService;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class DebugPanelController : MonoBehaviour
@@ -47,8 +49,7 @@ public class DebugPanelController : MonoBehaviour
 
     void OnBuildButtonClicked()
     {
-        GameManager.Instance.cityManager.PlaceBuilding("MindLab", new Vector2Int(1, 1));
-        UpdateResources();
+        SceneManager.LoadScene(1);
     }
 
     void OnEventButtonClicked()
