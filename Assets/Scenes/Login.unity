@@ -2621,15 +2621,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60ffcad2afe90d845a52fc1903a57ad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainUI: {fileID: 0}
-  registerDisplay: {fileID: 368184253}
-  registerEmailInput: {fileID: 678707617}
-  registerPasswordInput: {fileID: 1393917489}
-  loginDisplay: {fileID: 1774419948}
-  loginEmailInput: {fileID: 657156589}
-  loginPasswordInput: {fileID: 1823093614}
-  errorMessageText: {fileID: 674554686}
-  displayErrorDuration: 5
 --- !u!4 &1230290954
 Transform:
   m_ObjectHideFlags: 0
