@@ -145,15 +145,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 10038279}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a881f4c7f47170245b73ec6b0170378e, type: 3}
+  m_Script: {fileID: 11500000, guid: 102d7a7d3c2d918418fefb6be3e665a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  recruitButton: {fileID: 2054924799}
-  buildButton: {fileID: 119405818}
-  eventButton: {fileID: 2098928990}
-  nextDayButton: {fileID: 904180086}
-  resourceDisplay: {fileID: 960579722}
-  citizenListDisplay: {fileID: 706042677}
+  recruitButton: {fileID: 0}
+  buildButton: {fileID: 0}
+  eventButton: {fileID: 0}
+  nextDayButton: {fileID: 0}
+  resourceDisplay: {fileID: 0}
+  citizenListDisplay: {fileID: 0}
 --- !u!4 &10038281
 Transform:
   m_ObjectHideFlags: 0
@@ -178,7 +178,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 16134414}
-  - component: {fileID: 16134413}
   m_Layer: 0
   m_Name: CItyManager
   m_TagString: Untagged
@@ -186,19 +185,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &16134413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 16134412}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d690b4a14e8040499e79768be455129, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buildingCost: 200
 --- !u!4 &16134414
 Transform:
   m_ObjectHideFlags: 0
@@ -240,14 +226,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 33869172}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7bc7c65360d255438f7f8aeb176bc14, type: 3}
+  m_Script: {fileID: 11500000, guid: 127fd2a6763180341bb901b342e4aac8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resourceData:
-    money: 1000
-    sciencePoints: 0
-    food: 500
-    energy: 100
 --- !u!4 &33869174
 Transform:
   m_ObjectHideFlags: 0
@@ -1215,7 +1196,7 @@ MonoBehaviour:
     buildings: []
     triggeredEvents: []
     currentDay: 0
-  cityManager: {fileID: 16134413}
+  cityManager: {fileID: 0}
   citizenManager: {fileID: 766089296}
   eventManager: {fileID: 1252119771}
   saveManager: {fileID: 2101192010}
