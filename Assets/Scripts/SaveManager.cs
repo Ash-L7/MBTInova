@@ -66,7 +66,7 @@ public class CloudSave : MonoBehaviour
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             if (prefab != null)
             {
-                string cleanName = prefab.name; // Store original name without "(Clone)"
+                string cleanName = prefab.name; 
                 buildingPrefabs[cleanName] = prefab;
                 Debug.Log($"Loaded building prefab: {cleanName}");
             }

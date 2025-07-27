@@ -4,7 +4,14 @@ using UnityEngine.SceneManagement;
 public class GridPlacement : MonoBehaviour
 {
     public float gridSize = 1;
-    public GameObject infrastructureToPlaceDown;
+
+    [SerializeField] private GameObject infrastructureToPlaceDown;
+
+    public void SetCurrentBuilding(GameObject buildingPrefab)
+    {
+        infrastructureToPlaceDown = buildingPrefab;
+    }
+
     public LayerMask placementCollisionLayer;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
