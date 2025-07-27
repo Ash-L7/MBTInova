@@ -2,6 +2,9 @@
 using System.Resources;
 using System.Text;
 using UnityEngine;
+using System.Collections.Generic;
+using static CitizenSaveData;
+
 
 public class CitizenManager : MonoBehaviour
 {
@@ -169,4 +172,47 @@ public class CitizenManager : MonoBehaviour
 
         UpdateCitizensUI();
     }
+
+
+
+
+    
+
+    public List<CitizenSaveData> GetAllCitizenData()
+    {
+        List<CitizenSaveData> data = new List<CitizenSaveData>();
+        foreach (var c in cityData.citizens)
+        {
+            data.Add(new CitizenSaveData
+            {
+                mbtiType = c.mbtiType,
+                currentBuildingID = c.currentBuildingID,
+                jobSatisfaction = c.jobSatisfaction,
+                highSatisfactionDays = c.highSatisfactionDays,
+                currentState = c.currentState
+            });
+        }
+        return data;
+    }
+
+    public void RestoreCitizensFromData(List<CitizenSaveData> data)
+    {
+        cityData.citizens.Clear();
+
+        foreach (var d in data)
+        {
+            CitizenData c = new CitizenData(d.mbtiType)
+            {
+                currentBuildingID = d.currentBuildingID,
+                jobSatisfaction = d.jobSatisfaction,
+                highSatisfactionDays = d.highSatisfactionDays,
+                currentState = d.currentState
+            };
+
+            cityData.citizens.Add(c);
+        }
+
+        UpdateCitizensUI();
+    }
+
 }

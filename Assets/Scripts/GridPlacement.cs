@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GridPlacement : MonoBehaviour
 {
@@ -24,18 +25,20 @@ public class GridPlacement : MonoBehaviour
     private void PlaceItem()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 snappedMousePos = new Vector2(Mathf.Round(mousePos.x / gridSize) * gridSize, 
-            Mathf.Round(mousePos.y / gridSize) * gridSize);
-
-        Instantiate(infrastructureToPlaceDown, snappedMousePos, Quaternion.identity);
+        Vector2 snappedMousePos = new Vector2(Mathf.Round(mousePos.x / gridSize) * gridSize,
+                                              Mathf.Round(mousePos.y / gridSize) * gridSize);
 
         if (CanPlaceAtPosition(snappedMousePos))
         {
-            Instantiate(infrastructureToPlaceDown, snappedMousePos, Quaternion.identity);
+            GameObject placed = Instantiate(infrastructureToPlaceDown, snappedMousePos, Quaternion.identity);
+            var identifier = placed.AddComponent<BuildingIdentifier>();
+            identifier.prefabName = infrastructureToPlaceDown.name;
+            placed.tag = "Building";
+
         }
         else
         {
-            Debug.Log("Can't place here - position is occupied");
+            SceneManager.LoadScene(2);
         }
     }
 

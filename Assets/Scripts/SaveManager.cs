@@ -1,117 +1,209 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Services.Core;
 using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
+using static CitizenManager;
+using GameDefs;
+using static CitizenSaveData;
+
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class CloudSave : MonoBehaviour
 {
-    private const string CLOUD_SAVE_LEVEL_KEY = "level";
-    private const string CLOUD_SAVE_PET_NAME_KEY = "pet_name";
+    public GridPlacement gridPlacement;
+    private const string CLOUD_SAVE_BUILDINGS_KEY = "placed_buildings";
+    private const string CLOUD_SAVE_RESOURCES_KEY = "resources";
+    private const string CLOUD_SAVE_CITIZENS_KEY = "citizens";
+
+    [Header("Building Settings")]
+    public string buildingsFolderPath = "Assets/Sprites/Houses/";
+
+    [System.Serializable]
+    public class BuildingData
+    {
+        public string prefabName;
+        public Vector3 position;
+        public Quaternion rotation;
+    }
+
+    [System.Serializable]
+    public class BuildingDataWrapper
+    {
+        public List<BuildingData> buildings;
+    }
+
+    [System.Serializable]
+    public class ResourceDataWrapper
+    {
+        public int money;
+        public int sciencePoints;
+        public int food;
+        public int energy;
+    }
+
+
+    private Dictionary<string, GameObject> buildingPrefabs = new Dictionary<string, GameObject>();
 
     void Start()
     {
         InitializeServices();
+        LoadAllBuildingPrefabs();
+    }
+
+    void LoadAllBuildingPrefabs()
+    {
+        buildingPrefabs.Clear();
+
+#if UNITY_EDITOR
+        string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] { buildingsFolderPath });
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab != null)
+            {
+                string cleanName = prefab.name; // Store original name without "(Clone)"
+                buildingPrefabs[cleanName] = prefab;
+                Debug.Log($"Loaded building prefab: {cleanName}");
+            }
+        }
+#endif
     }
 
     async void InitializeServices()
     {
-        if (!UnityServices.State.Equals(ServicesInitializationState.Initialized))
+        if (UnityServices.State != ServicesInitializationState.Initialized)
             await UnityServices.InitializeAsync();
 
         if (!AuthenticationService.Instance.IsSignedIn)
+            Debug.LogWarning("User not signed in. Cloud Save requires authentication.");
+    }
+
+    public void OnSaveButtonPressed() => SaveAllGameData();
+    public void OnLoadButtonPressed() => LoadAllGameData();
+
+    async void SaveAllGameData()
+    {
+        var buildings = GameObject.FindGameObjectsWithTag("Building");
+        var buildingsData = new BuildingDataWrapper { buildings = new List<BuildingData>() };
+
+        foreach (var building in buildings)
         {
-            Debug.LogWarning("User is not signed in. Cloud Save requires an authenticated session.");
+            string prefabName = GetOriginalPrefabName(building);
+            if (!string.IsNullOrEmpty(prefabName) && buildingPrefabs.ContainsKey(prefabName))
+            {
+                buildingsData.buildings.Add(new BuildingData
+                {
+                    prefabName = prefabName,
+                    position = building.transform.position,
+                    rotation = building.transform.rotation
+                });
+            }
+        }
+
+        var r = ResourceManager.Instance.resourceData;
+        var resourceData = new ResourceDataWrapper
+        {
+            money = r.money,
+            sciencePoints = r.sciencePoints,
+            food = r.food,
+            energy = r.energy
+        };
+
+        var citizens = GameManager.Instance.citizenManager.GetAllCitizenData(); 
+        var citizenData = new CitizenDataWrapper { citizens = citizens };
+
+
+        var savePayload = new Dictionary<string, object>
+    {
+        { CLOUD_SAVE_BUILDINGS_KEY, JsonUtility.ToJson(buildingsData) },
+        { CLOUD_SAVE_RESOURCES_KEY, JsonUtility.ToJson(resourceData) },
+        { CLOUD_SAVE_CITIZENS_KEY, JsonUtility.ToJson(citizenData) }
+    };
+
+        try
+        {
+            await CloudSaveService.Instance.Data.ForceSaveAsync(savePayload);
+            Debug.Log("All game data saved.");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Save failed: {e.Message}");
         }
     }
 
-    public void OnSaveButtonPressed()
+
+    string GetOriginalPrefabName(GameObject instance)
     {
-        SaveDataWithErrorHandling();
+        var id = instance.GetComponent<BuildingIdentifier>();
+        return id != null ? id.prefabName : null;
     }
 
-    public void OnLoadButtonPressed()
+    async void LoadAllGameData()
     {
-        LoadDataWithErrorHandling();
-    }
+        var keys = new HashSet<string>
+    {
+        CLOUD_SAVE_BUILDINGS_KEY,
+        CLOUD_SAVE_RESOURCES_KEY,
+        CLOUD_SAVE_CITIZENS_KEY
+    };
 
-    // SaveData method as in the tutorial
-    async void SaveData() {
-        var data = new Dictionary<string, object>{ 
-            {"level", 1}, 
-            {"pet_name", "Good Boy"} 
-        };
-        await CloudSaveService.Instance.Data.ForceSaveAsync(data);
-        Debug.Log("Attempted to save data");
-    }
+        try
+        {
+            var data = await CloudSaveService.Instance.Data.LoadAsync(keys);
 
-    // LoadData method as in the tutorial
-    async void LoadData() {
-        var keysToLoad = new HashSet<string> {
-            "level",
-            "pet_name"
-        };
-        var loadedData = await CloudSaveService.Instance.Data.LoadAsync(keysToLoad);
-        var loadedLevel = loadedData["level"];
-        var loadedPetName = loadedData["pet_name"];
-        Debug.Log("Loaded data. Level: " + loadedLevel + ", Pet name: " + loadedPetName);
-    }
-
-    async void SaveDataWithErrorHandling() {
-        var data = new Dictionary<string, object>{ 
-            {CLOUD_SAVE_LEVEL_KEY, 1}, 
-            {CLOUD_SAVE_PET_NAME_KEY, "Good Boy"} 
-        };
-        try {
-            Debug.Log("Attempting to save data...");
-            await CloudSaveService.Instance.Data.ForceSaveAsync(data);
-            Debug.Log("Save data success!");
-        } catch (ServicesInitializationException e) {
-            // service not initialized
-            Debug.LogError(e);
-        } catch (CloudSaveValidationException e) {
-            // validation error
-            Debug.LogError(e);
-        } catch (CloudSaveRateLimitedException e) {
-            // rate limited
-            Debug.LogError(e);
-        } catch (CloudSaveException e) {
-            Debug.LogError(e);
-        }
-
-    }
-
-    async void LoadDataWithErrorHandling() {
-        var keysToLoad = new HashSet<string> {
-            CLOUD_SAVE_LEVEL_KEY,
-            CLOUD_SAVE_PET_NAME_KEY
-        };
-        try {
-            var loadedData = await CloudSaveService.Instance.Data.LoadAsync(keysToLoad);
-
-            if (loadedData.TryGetValue(CLOUD_SAVE_LEVEL_KEY, out var loadedLevel)) {
-                Debug.Log("Loaded saved level: " + loadedLevel);
-            } else {
-                Debug.Log("Level not found in cloud save");
+            if (data.TryGetValue(CLOUD_SAVE_BUILDINGS_KEY, out var bData))
+            {
+                ClearExistingBuildings();
+                var wrapper = JsonUtility.FromJson<BuildingDataWrapper>(bData.ToString());
+                foreach (var buildingData in wrapper.buildings)
+                {
+                    if (buildingPrefabs.TryGetValue(buildingData.prefabName, out GameObject prefab))
+                    {
+                        var newBuilding = Instantiate(prefab, buildingData.position, buildingData.rotation);
+                        newBuilding.tag = "Building";
+                        var id = newBuilding.AddComponent<BuildingIdentifier>();
+                        id.prefabName = buildingData.prefabName;
+                    }
+                }
             }
 
-            if (loadedData.TryGetValue(CLOUD_SAVE_PET_NAME_KEY, out var loadedPetName)) {
-                Debug.Log("Loaded saved pet name: " + loadedPetName);
-            } else {
-                Debug.Log("Pet name not found in cloud save");
+            if (data.TryGetValue(CLOUD_SAVE_RESOURCES_KEY, out var rData))
+            {
+                var r = JsonUtility.FromJson<ResourceDataWrapper>(rData.ToString());
+                var target = ResourceManager.Instance.resourceData;
+                target.money = r.money;
+                target.sciencePoints = r.sciencePoints;
+                target.food = r.food;
+                target.energy = r.energy;
             }
-        } catch (ServicesInitializationException e) {
-            // service not initialized
-            Debug.LogError(e);
-        } catch (CloudSaveValidationException e) {
-            // validation error
-            Debug.LogError(e);
-        } catch (CloudSaveRateLimitedException e) {
-            // rate limited
-            Debug.LogError(e);
-        } catch (CloudSaveException e) {
-            Debug.LogError(e);
+
+            if (data.TryGetValue(CLOUD_SAVE_CITIZENS_KEY, out var cData))
+            {
+                var c = JsonUtility.FromJson<CitizenDataWrapper>(cData.ToString());
+                GameManager.Instance.citizenManager.RestoreCitizensFromData(c.citizens); 
+            }
+
+            Debug.Log("All game data loaded.");
         }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Load failed: {e.Message}");
+        }
+    }
+
+
+    private void ClearExistingBuildings()
+    {
+        var existingBuildings = GameObject.FindGameObjectsWithTag("Building");
+        foreach (var building in existingBuildings)
+        {
+            Destroy(building);
+        }
+        Debug.Log($"Cleared {existingBuildings.Length} existing buildings.");
     }
 }
