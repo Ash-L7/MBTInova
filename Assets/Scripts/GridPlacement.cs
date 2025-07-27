@@ -6,7 +6,7 @@ public class GridPlacement : MonoBehaviour
     public float gridSize = 1;
     public LayerMask placementCollisionLayer;
     public GameObject buildingSelectorTab;
-
+    public GameObject infrastructureToPlaceDown;
     private Vector2 lastClickedPosition;
     private bool awaitingBuildingSelection = false;
 
@@ -51,17 +51,45 @@ public class GridPlacement : MonoBehaviour
         return colliders.Length == 0;
     }
 
+    public void SetCurrentBuilding(GameObject buildingPrefab)
+    {
+        infrastructureToPlaceDown = buildingPrefab;
+    }
+
+    public void CancelBuildingPlacement()
+    {
+        buildingSelectorTab.SetActive(false);
+        FindObjectOfType<GridPlacement>().SetCurrentBuilding(null);
+        awaitingBuildingSelection = false;
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
+
         float size = 10f;
         for (float x = -size; x <= size; x += gridSize)
         {
-            for (float y = -size; y <= size; y += gridSize)
-            {
-                Gizmos.DrawLine(new Vector3(x, -size, 0), new Vector3(x, size, 0));
-                Gizmos.DrawLine(new Vector3(-size, y, 0), new Vector3(size, y, 0));
-            }
+            Gizmos.DrawLine(new Vector3(x, -size, 0), new Vector3(x, size, 0));
+            Gizmos.DrawLine(new Vector3(-size, x, 0), new Vector3(size, x, 0));
+        }
+
+        if (Camera.main != null)
+        {
+            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 snappedPos = new Vector2(
+                Mathf.Round(mouseWorld.x / gridSize) * gridSize,
+                Mathf.Round(mouseWorld.y / gridSize) * gridSize
+            );
+
+            Vector3 center = new Vector3(snappedPos.x, snappedPos.y, 0f);
+            Vector3 sizeVec = new Vector3(gridSize, gridSize, 0f);
+
+            Gizmos.color = new Color(1f, 1f, 0f, 0.4f);
+            Gizmos.DrawCube(center, sizeVec);
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(center, sizeVec);
         }
     }
 }

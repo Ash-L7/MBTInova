@@ -3,9 +3,6 @@ using UnityEngine;
 using Unity.Services.Core;
 using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
-using static CitizenManager;
-using GameDefs;
-using static CitizenSaveData;
 
 
 #if UNITY_EDITOR
@@ -16,8 +13,6 @@ public class CloudSave : MonoBehaviour
 {
     public GridPlacement gridPlacement;
     private const string CLOUD_SAVE_BUILDINGS_KEY = "placed_buildings";
-    private const string CLOUD_SAVE_RESOURCES_KEY = "resources";
-    private const string CLOUD_SAVE_CITIZENS_KEY = "citizens";
 
     [Header("Building Settings")]
     public string buildingsFolderPath = "Assets/Sprites/Houses/";
@@ -105,30 +100,15 @@ public class CloudSave : MonoBehaviour
             }
         }
 
-        var r = ResourceManager.Instance.resourceData;
-        var resourceData = new ResourceDataWrapper
-        {
-            money = r.money,
-            sciencePoints = r.sciencePoints,
-            food = r.food,
-            energy = r.energy
-        };
-
-        var citizens = GameManager.Instance.citizenManager.GetAllCitizenData(); 
-        var citizenData = new CitizenDataWrapper { citizens = citizens };
-
-
         var savePayload = new Dictionary<string, object>
     {
-        { CLOUD_SAVE_BUILDINGS_KEY, JsonUtility.ToJson(buildingsData) },
-        { CLOUD_SAVE_RESOURCES_KEY, JsonUtility.ToJson(resourceData) },
-        { CLOUD_SAVE_CITIZENS_KEY, JsonUtility.ToJson(citizenData) }
+        { CLOUD_SAVE_BUILDINGS_KEY, JsonUtility.ToJson(buildingsData) }
     };
 
         try
         {
             await CloudSaveService.Instance.Data.ForceSaveAsync(savePayload);
-            Debug.Log("All game data saved.");
+            Debug.Log("Building data saved.");
         }
         catch (System.Exception e)
         {
@@ -147,9 +127,7 @@ public class CloudSave : MonoBehaviour
     {
         var keys = new HashSet<string>
     {
-        CLOUD_SAVE_BUILDINGS_KEY,
-        CLOUD_SAVE_RESOURCES_KEY,
-        CLOUD_SAVE_CITIZENS_KEY
+        CLOUD_SAVE_BUILDINGS_KEY
     };
 
         try
@@ -172,23 +150,7 @@ public class CloudSave : MonoBehaviour
                 }
             }
 
-            if (data.TryGetValue(CLOUD_SAVE_RESOURCES_KEY, out var rData))
-            {
-                var r = JsonUtility.FromJson<ResourceDataWrapper>(rData.ToString());
-                var target = ResourceManager.Instance.resourceData;
-                target.money = r.money;
-                target.sciencePoints = r.sciencePoints;
-                target.food = r.food;
-                target.energy = r.energy;
-            }
-
-            if (data.TryGetValue(CLOUD_SAVE_CITIZENS_KEY, out var cData))
-            {
-                var c = JsonUtility.FromJson<CitizenDataWrapper>(cData.ToString());
-                GameManager.Instance.citizenManager.RestoreCitizensFromData(c.citizens); 
-            }
-
-            Debug.Log("All game data loaded.");
+            Debug.Log("Building data loaded.");
         }
         catch (System.Exception e)
         {
