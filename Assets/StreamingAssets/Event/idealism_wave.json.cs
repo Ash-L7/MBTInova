@@ -1,0 +1,47 @@
+{
+    "eventID": "idealism_wave",
+  "category": "Temperament Conflict",
+  "triggerConditions": [
+    {
+        "type": "SJ",
+      "operatorSymbol": "<",
+      "value": 0.15
+    },
+    {
+        "type": "NF",
+      "operatorSymbol": ">",
+      "value": 0.35
+    }
+  ],
+  "text": "An idealism wave is sweeping through the city. Citizens are becoming more philosophical and questioning leadership.",
+  "options": [
+    {
+        "text": "Embrace the wave",
+      "effects": [
+        {
+            "type": "creativityPoints",
+          "value": 50
+        },
+        {
+            "type": "stability",
+          "value": -20
+        }
+      ]
+    },
+    {
+        "text": "Suppress idealism",
+      "effects": [
+        {
+            "type": "stability",
+          "value": 20
+        },
+        {
+            "type": "satisfaction",
+          "value": -10
+        }
+      ]
+    }
+  ],
+  "cooldownDays": 30,
+  "rarityWeight": 5
+}

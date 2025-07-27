@@ -34,7 +34,6 @@ public class GameManager : MonoBehaviour
         if (currentState == GameState.Playing)
         {
             cityManager.UpdateProduction();
-            citizenManager.UpdateCitizens();
             eventManager.CheckTriggers();
         }
     }
@@ -55,7 +54,7 @@ public class GameManager : MonoBehaviour
     // Debug UI
     public void LoadTestScenario()
     {
-        citizenManager.CreateCitizen("INTP");
+        citizenManager.CreateCitizen();
         cityManager.PlaceBuilding("MindLab", new Vector2Int(1, 1));
         eventManager.ForceTrigger("INTP_vs_ESFJ");
     }
@@ -78,6 +77,19 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
+
+    public void NextDayTick()
+    {
+        Debug.Log("=== NextDay Start ===");
+
+        citizenManager.UpdateCitizens();    // update fsm
+        cityManager.UpdateProduction();     // update production
+        //resourceManager.ApplyDailyChanges();
+        eventManager.CheckTriggers();
+
+        Debug.Log("=== NextDay End ===");
+    }
+
 }
 
 public enum GameState
