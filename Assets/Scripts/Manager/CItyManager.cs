@@ -9,10 +9,21 @@ public class CityManager : MonoBehaviour
         cityData = data;
     }
 
+    public int buildingCost = 200;
+
     public void PlaceBuilding(string type, Vector2Int position)
     {
-        Debug.Log($"Placing building: {type} at {position}");
+        if (ResourceManager.Instance.SpendMoney(buildingCost))
+        {
+            Debug.Log($"Placing building: {type} at {position}");
+            // TODO: Add building to cityData.buildings
+        }
+        else
+        {
+            Debug.Log("Not enough money to place building!");
+        }
     }
+
 
     public void UpdateProduction()
     {
