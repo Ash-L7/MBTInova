@@ -212,7 +212,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 105310813}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
@@ -226,7 +226,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 141347345}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
         m_MethodName: set_enabled
         m_Mode: 6
@@ -286,8 +286,8 @@ GameObject:
   m_Component:
   - component: {fileID: 141347343}
   - component: {fileID: 141347344}
-  - component: {fileID: 141347345}
   - component: {fileID: 141347346}
+  - component: {fileID: 141347347}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -365,23 +365,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &141347345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 141347342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58bbb3f6dff26314cb39c679e852c0e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gridSize: 1
-  infrastructureToPlaceDown: {fileID: 3778604167019708435, guid: ff35fdde44e351c4bab96953d99db86a, type: 3}
-  placementCollisionLayer:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!114 &141347346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,6 +379,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridPlacement: {fileID: 0}
   buildingsFolderPath: Assets/Sprites/Houses/
+--- !u!114 &141347347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141347342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58bbb3f6dff26314cb39c679e852c0e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridSize: 1
+  placementCollisionLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  buildingSelectorTab: {fileID: 1226656118}
 --- !u!1 &374366411
 GameObject:
   m_ObjectHideFlags: 0
@@ -408,7 +408,6 @@ GameObject:
   - component: {fileID: 374366415}
   - component: {fileID: 374366414}
   - component: {fileID: 374366413}
-  - component: {fileID: 374366416}
   m_Layer: 5
   m_Name: EntertainmentButton
   m_TagString: Untagged
@@ -480,9 +479,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 141347345}
+      - m_Target: {fileID: 141347347}
         m_TargetAssemblyTypeName: GridPlacement, Assembly-CSharp
-        m_MethodName: SetCurrentBuilding
+        m_MethodName: PlaceSelectedBuilding
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1133783326036659073, guid: 078affd3ff37455408a34a3673bd1fa3, type: 3}
@@ -530,20 +529,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 374366411}
   m_CullTransparentMesh: 1
---- !u!114 &374366416
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 374366411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc3b392401da59d46aa03d6bc1571590, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gridPlacement: {fileID: 141347345}
-  buildingPrefab: {fileID: 1133783326036659073, guid: 078affd3ff37455408a34a3673bd1fa3, type: 3}
 --- !u!1 &406463216
 GameObject:
   m_ObjectHideFlags: 0
@@ -1004,9 +989,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 141347345}
+      - m_Target: {fileID: 141347347}
         m_TargetAssemblyTypeName: GridPlacement, Assembly-CSharp
-        m_MethodName: SetCurrentBuilding
+        m_MethodName: PlaceSelectedBuilding
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 2511460943091039871, guid: e6287a1abfefea046b36e2592da59d88, type: 3}
@@ -1726,7 +1711,6 @@ GameObject:
   - component: {fileID: 877053115}
   - component: {fileID: 877053114}
   - component: {fileID: 877053113}
-  - component: {fileID: 877053116}
   m_Layer: 5
   m_Name: CentralDogmaButton
   m_TagString: Untagged
@@ -1798,9 +1782,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 141347345}
+      - m_Target: {fileID: 141347347}
         m_TargetAssemblyTypeName: GridPlacement, Assembly-CSharp
-        m_MethodName: SetCurrentBuilding
+        m_MethodName: PlaceSelectedBuilding
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 3778604167019708435, guid: ff35fdde44e351c4bab96953d99db86a, type: 3}
@@ -1848,20 +1832,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 877053111}
   m_CullTransparentMesh: 1
---- !u!114 &877053116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 877053111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc3b392401da59d46aa03d6bc1571590, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gridPlacement: {fileID: 141347345}
-  buildingPrefab: {fileID: 3778604167019708435, guid: ff35fdde44e351c4bab96953d99db86a, type: 3}
 --- !u!1 &891747680
 GameObject:
   m_ObjectHideFlags: 0
@@ -8730,9 +8700,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 141347345}
+      - m_Target: {fileID: 141347347}
         m_TargetAssemblyTypeName: GridPlacement, Assembly-CSharp
-        m_MethodName: SetCurrentBuilding
+        m_MethodName: PlaceSelectedBuilding
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 7034812650262388003, guid: 3699a6f9b68387b40a8c9e0704151653, type: 3}
@@ -9192,7 +9162,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1849865723
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9280,7 +9250,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 141347345}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
         m_MethodName: set_enabled
         m_Mode: 6

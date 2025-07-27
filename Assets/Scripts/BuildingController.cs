@@ -8,6 +8,6 @@ public class BuildingController : MonoBehaviour
 
     public void OnBuildingButtonClicked()
     {
-        gridPlacement.SetCurrentBuilding(buildingPrefab);
+        gridPlacement.PlaceSelectedBuilding(buildingPrefab);
     }
 }
