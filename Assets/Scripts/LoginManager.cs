@@ -5,6 +5,7 @@ using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class LoginManager : MonoBehaviour
 {
@@ -22,6 +23,10 @@ public class LoginManager : MonoBehaviour
 
     public float displayErrorDuration = 5f;
 
+    public void ChangeScene(int sceneID)
+    {
+        SceneManager.LoadScene(sceneID);
+    }
     async void Start()
     {
         await UnityServices.InitializeAsync();
@@ -29,7 +34,7 @@ public class LoginManager : MonoBehaviour
 
         if (isLoggedIn)
         {
-            mainUI.SetActive(true);
+            ChangeScene(1);
             registerDisplay.SetActive(false);
             loginDisplay.SetActive(false);
         }
@@ -39,14 +44,12 @@ public class LoginManager : MonoBehaviour
     {
         loginDisplay.SetActive(true);
         registerDisplay.SetActive(false);
-        mainUI.SetActive(false);
     }
 
     public void OpenRegisterPanel()
     {
         loginDisplay.SetActive(false);
         registerDisplay.SetActive(true);
-        mainUI.SetActive(false);
     }
     public async void Register()
     {
@@ -70,11 +73,11 @@ public class LoginManager : MonoBehaviour
         {
             await AuthenticationService.Instance.SignUpWithUsernamePasswordAsync(email, password);
             Debug.Log("Registration successful");
-            mainUI.SetActive(true);
+            ChangeScene(1);
             registerDisplay.SetActive(false);
             loginDisplay.SetActive(false);
         }
-        catch (AuthenticationException e)
+        catch (Unity.Services.Authentication.AuthenticationException e)
         {
             ShowErrorMessage(e.Message);
         }
@@ -90,11 +93,11 @@ public class LoginManager : MonoBehaviour
         {
             await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(email, password);
             Debug.Log("Login successful");
-            mainUI.SetActive(true);
+            ChangeScene(1);
             registerDisplay.SetActive(false);
             loginDisplay.SetActive(false);
         }
-        catch (AuthenticationException e)
+        catch (Unity.Services.Authentication.AuthenticationException e)
         {
             ShowErrorMessage(e.Message);
         }
