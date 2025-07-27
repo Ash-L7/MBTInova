@@ -9,8 +9,6 @@ using UnityEngine.SceneManagement;
 
 public class LoginManager : MonoBehaviour
 {
-    [SerializeField] private GameObject mainUI = default;
-
     [SerializeField] private GameObject registerDisplay = default;
     [SerializeField] private TMP_InputField registerEmailInput = default;
     [SerializeField] private TMP_InputField registerPasswordInput = default;
