@@ -1,100 +1,23 @@
 using UnityEngine;
+using System;
+using System.Collections.Generic;
 
-public class GameManager : MonoBehaviour
+[System.Serializable]
+public class CityData
 {
-    public static GameManager Instance { get; private set; }
+    public ResourceData resources = new ResourceData();
+    public List<CitizenData> citizens = new List<CitizenData>();
+    public List<BuildingData> buildings = new List<BuildingData>();
+    public List<string> triggeredEvents = new List<string>();
 
-    public CityData cityData;
+    public int currentDay = 0;
 
-    public CityManager cityManager;
-    public CitizenManager citizenManager;
-    public EventManager eventManager;
-    public SaveManager saveManager;
-
-    public GameState currentState = GameState.Playing;
-
-    void Awake()
+    public void InitializeDefault()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        resources = new ResourceData();
+        citizens.Clear();
+        buildings.Clear();
+        triggeredEvents.Clear();
+        currentDay = 0;
     }
-
-    void Start()
-    {
-        InitializeGame();
-    }
-
-    void Update()
-    {
-        if (currentState == GameState.Playing)
-        {
-            cityManager.UpdateProduction();
-            eventManager.CheckTriggers();
-        }
-    }
-
-    public void InitializeGame()
-    {
-        cityData = new CityData();
-        cityData.InitializeDefault();
-
-        cityManager.Init(cityData);
-        citizenManager.Init(cityData);
-        eventManager.Init(cityData);
-        saveManager.Init(cityData);
-
-        Debug.Log("Game initialized.");
-    }
-
-    // Debug UI
-    public void LoadTestScenario()
-    {
-        citizenManager.CreateCitizen();
-        cityManager.PlaceBuilding("MindLab", new Vector2Int(1, 1));
-        eventManager.ForceTrigger("INTP_vs_ESFJ");
-    }
-
-    public void SpendResource(string type, int amount)
-    {
-        switch (type)
-        {
-            case "money":
-                cityData.resources.money -= amount;
-                break;
-            case "science":
-                cityData.resources.sciencePoints -= amount;
-                break;
-            case "food":
-                cityData.resources.food -= amount;
-                break;
-            case "energy":
-                cityData.resources.energy -= amount;
-                break;
-        }
-    }
-
-    public void NextDayTick()
-    {
-        Debug.Log("=== NextDay Start ===");
-
-        citizenManager.UpdateCitizens();    // update fsm
-        cityManager.UpdateProduction();     // update production
-        //resourceManager.ApplyDailyChanges();
-        eventManager.CheckTriggers();
-
-        Debug.Log("=== NextDay End ===");
-    }
-
-}
-
-public enum GameState
-{
-    Playing,
-    Paused,
-    Menu
 }
