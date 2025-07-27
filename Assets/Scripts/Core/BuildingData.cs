@@ -8,7 +8,7 @@ public class BuildingData
 {
     public string buildingID;
     public string type;
-    public Vector2Int position;
+    public Vector2Int position;                 
     public int level = 1;
 
     public List<string> assignedCitizenIDs = new List<string>();

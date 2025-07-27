@@ -1,7 +1,6 @@
-﻿using GameDefs;
-using System.Resources;
+﻿using UnityEngine;
 using System.Text;
-using UnityEngine;
+using GameDefs;
 
 public class CitizenManager : MonoBehaviour
 {
@@ -132,7 +131,7 @@ public class CitizenManager : MonoBehaviour
             if (citizen.jobSatisfaction >= 80)
             {
                 citizen.highSatisfactionDays++;
-                Debug.Log("==>FSM: Add SatDay");
+                Debug.Log("==> FSM: Add SatDay");
             }
             else
             {
