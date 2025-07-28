@@ -10,10 +10,17 @@ public class GridPlacement : MonoBehaviour
     private Vector2 lastClickedPosition;
     private bool awaitingBuildingSelection = false;
 
+    bool IsPointerOverUI()
+    {
+        return UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+    }
+
     void Update()
     {
         if (Input.GetMouseButtonDown(0) && !awaitingBuildingSelection)
         {
+            if (IsPointerOverUI()) return;
+
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 snappedMousePos = new Vector2(Mathf.Round(mousePos.x / gridSize) * gridSize,
                                                   Mathf.Round(mousePos.y / gridSize) * gridSize);
