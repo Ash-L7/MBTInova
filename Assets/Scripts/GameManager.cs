@@ -33,8 +33,7 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.Playing)
         {
-            cityManager.UpdateProduction();
-            eventManager.CheckTriggers();
+            
         }
     }
 
