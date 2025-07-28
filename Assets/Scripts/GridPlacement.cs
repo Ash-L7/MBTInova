@@ -74,6 +74,9 @@ public class GridPlacement : MonoBehaviour
             Gizmos.DrawLine(new Vector3(-size, x, 0), new Vector3(size, x, 0));
         }
 
+        if (buildingSelectorTab != null && buildingSelectorTab.activeSelf)
+            return;
+
         if (Camera.main != null)
         {
             Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
