@@ -5,10 +5,6 @@ using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
 
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 public class CloudSave : MonoBehaviour
 {
     public GridPlacement gridPlacement;
@@ -52,21 +48,12 @@ public class CloudSave : MonoBehaviour
     void LoadAllBuildingPrefabs()
     {
         buildingPrefabs.Clear();
-
-#if UNITY_EDITOR
-        string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] { buildingsFolderPath });
-        foreach (string guid in guids)
+        GameObject[] loadedPrefabs = Resources.LoadAll<GameObject>("Buildings");
+        foreach (GameObject prefab in loadedPrefabs)
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            if (prefab != null)
-            {
-                string cleanName = prefab.name; 
-                buildingPrefabs[cleanName] = prefab;
-                Debug.Log($"Loaded building prefab: {cleanName}");
-            }
+            buildingPrefabs[prefab.name] = prefab;
+            Debug.Log($"Loaded prefab: {prefab.name}");
         }
-#endif
     }
 
     async void InitializeServices()

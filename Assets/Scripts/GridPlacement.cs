@@ -7,6 +7,11 @@ public class GridPlacement : MonoBehaviour
     public LayerMask placementCollisionLayer;
     public GameObject buildingSelectorTab;
     public GameObject infrastructureToPlaceDown;
+
+    [Header("Runtime Highlight")]
+    public GameObject highlightPrefab; 
+    private GameObject currentHighlight;
+
     private Vector2 lastClickedPosition;
     private bool awaitingBuildingSelection = false;
 
@@ -15,8 +20,42 @@ public class GridPlacement : MonoBehaviour
         return UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
     }
 
+    void Start()
+    {
+        if (highlightPrefab == null)
+        {
+            CreateDefaultHighlight();
+        }
+
+        if (highlightPrefab != null)
+        {
+            currentHighlight = Instantiate(highlightPrefab);
+            currentHighlight.name = "GridHighlight";
+            currentHighlight.SetActive(false);
+        }
+    }
+
+    void CreateDefaultHighlight()
+    {
+        GameObject highlight = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        highlight.name = "HighlightPrefab";
+
+        DestroyImmediate(highlight.GetComponent<Collider>());
+
+        Renderer renderer = highlight.GetComponent<Renderer>();
+        Material mat = new Material(Shader.Find("Sprites/Default"));
+        mat.color = new Color(1f, 1f, 0f, 0.4f);
+        renderer.material = mat;
+
+        highlight.transform.localScale = new Vector3(gridSize, gridSize, 1f);
+
+        highlightPrefab = highlight;
+    }
+
     void Update()
     {
+        UpdateHighlight();
+
         if (Input.GetMouseButtonDown(0) && !awaitingBuildingSelection)
         {
             if (IsPointerOverUI()) return;
@@ -35,6 +74,33 @@ public class GridPlacement : MonoBehaviour
             {
                 SceneManager.LoadScene(2);
             }
+        }
+    }
+
+    void UpdateHighlight()
+    {
+        if (currentHighlight == null) return;
+
+        if (buildingSelectorTab != null && buildingSelectorTab.activeSelf)
+        {
+            currentHighlight.SetActive(false);
+            return;
+        }
+
+        if (Camera.main != null)
+        {
+            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 snappedPos = new Vector2(
+                Mathf.Round(mouseWorld.x / gridSize) * gridSize,
+                Mathf.Round(mouseWorld.y / gridSize) * gridSize
+            );
+
+            currentHighlight.transform.position = new Vector3(snappedPos.x, snappedPos.y, -0.1f);
+            currentHighlight.SetActive(true);
+        }
+        else
+        {
+            currentHighlight.SetActive(false);
         }
     }
 
@@ -68,38 +134,5 @@ public class GridPlacement : MonoBehaviour
         buildingSelectorTab.SetActive(false);
         FindObjectOfType<GridPlacement>().SetCurrentBuilding(null);
         awaitingBuildingSelection = false;
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-
-        float size = 10f;
-        for (float x = -size; x <= size; x += gridSize)
-        {
-            Gizmos.DrawLine(new Vector3(x, -size, 0), new Vector3(x, size, 0));
-            Gizmos.DrawLine(new Vector3(-size, x, 0), new Vector3(size, x, 0));
-        }
-
-        if (buildingSelectorTab != null && buildingSelectorTab.activeSelf)
-            return;
-
-        if (Camera.main != null)
-        {
-            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 snappedPos = new Vector2(
-                Mathf.Round(mouseWorld.x / gridSize) * gridSize,
-                Mathf.Round(mouseWorld.y / gridSize) * gridSize
-            );
-
-            Vector3 center = new Vector3(snappedPos.x, snappedPos.y, 0f);
-            Vector3 sizeVec = new Vector3(gridSize, gridSize, 0f);
-
-            Gizmos.color = new Color(1f, 1f, 0f, 0.4f);
-            Gizmos.DrawCube(center, sizeVec);
-
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(center, sizeVec);
-        }
     }
 }
