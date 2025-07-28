@@ -213,7 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12dfe190492b0dc40a0136020c0148ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingCost: 200
+  buildingPrefab: {fileID: 0}
 --- !u!1 &33869172
 GameObject:
   m_ObjectHideFlags: 0

@@ -49,10 +49,10 @@ public class CitizenData
 
     private string ResolveTemperament(string mbti)
     {
-        if (mbti == "INTP" || mbti == "ENTP"  || mbti == "INTJ" || mbti == "ENTJ") return "NT";
-        if (mbti == "INFP" || mbti == "ENFP"  || mbti == "INFJ" || mbti == "ENFJ") return "NF";
-        if (mbti == "ISTP" || mbti == "ESTP"  || mbti == "ISFP" || mbti == "ESFP") return "SP";
-        if (mbti == "ISTJ" || mbti == "ESTJ"  || mbti == "ISFJ" || mbti == "ESFJ") return "SJ";
+        if (mbti == "INTP" || mbti == "ENTP" || mbti == "INTJ" || mbti == "ENTJ") return "NT";
+        if (mbti == "INFP" || mbti == "ENFP" || mbti == "INFJ" || mbti == "ENFJ") return "NF";
+        if (mbti == "ISTP" || mbti == "ESTP" || mbti == "ISFP" || mbti == "ESFP") return "SP";
+        if (mbti == "ISTJ" || mbti == "ESTJ" || mbti == "ISFJ" || mbti == "ESFJ") return "SJ";
         return "NT";
     }
 

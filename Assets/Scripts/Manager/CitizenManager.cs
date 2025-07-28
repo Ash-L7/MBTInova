@@ -1,10 +1,7 @@
-﻿using GameDefs;
-using System.Resources;
+﻿using UnityEngine;
 using System.Text;
-using UnityEngine;
 using System.Collections.Generic;
-using static CitizenSaveData;
-
+using GameDefs;
 
 public class CitizenManager : MonoBehaviour
 {
@@ -32,7 +29,7 @@ public class CitizenManager : MonoBehaviour
         {
             string mbtiType = mbtiPool[Random.Range(0, mbtiPool.Length)];
             CitizenData newCitizen = new CitizenData(mbtiType);
-            newCitizen.currentBuildingID = "DummyBuilding"; // just for testinggggg
+            newCitizen.currentBuildingID = "DummyBuilding"; // just for testing
             cityData.citizens.Add(newCitizen);
 
             Debug.Log($"Created: {newCitizen.mbtiType} - {newCitizen.temperament} - {newCitizen.dominantFunction}/{newCitizen.auxiliaryFunction}");
@@ -63,42 +60,91 @@ public class CitizenManager : MonoBehaviour
         return citizenDomain == building.domain;
     }
 
-    public void ApplyBuff(CitizenData citizen, BuildingData building)
+    private void RecalculateBuildingBuff(BuildingData building)
     {
-        bool isSynergy = IsMatch(citizen, building);
+        if (building == null) return;
 
-        if (isSynergy)
+        float baseMultiplier = 1.0f;
+
+        foreach (string citizenID in building.assignedCitizenIDs)
         {
-            if (citizen.currentState == CitizenState.Promoted)
+            CitizenData citizen = cityData.GetCitizenByID(citizenID);
+            if (citizen == null) continue;
+
+            if (IsMatch(citizen, building))
             {
-                citizen.jobSatisfaction += 25;
-                building.productionMultiplier += 0.5f;
-                Debug.Log($"Buff upgraded！{citizen.mbtiType} to {building.buildingID} +0.5");
+                if (citizen.currentState == CitizenState.Promoted)
+                {
+                    baseMultiplier += 0.5f;
+                    citizen.jobSatisfaction = Mathf.Min(citizen.jobSatisfaction + 25, 100);
+                }
+                else
+                {
+                    baseMultiplier += 0.2f;
+                    citizen.jobSatisfaction = Mathf.Min(citizen.jobSatisfaction + 20, 100);
+                }
             }
             else
             {
-                citizen.jobSatisfaction += 20;
-                building.productionMultiplier += 0.2f;
-                Debug.Log($"Buff applied：{citizen.mbtiType} to {building.domain}");
+                citizen.jobSatisfaction = Mathf.Max(citizen.jobSatisfaction - 10, 0);
             }
         }
-        else
+
+        Dictionary<string, int> temperamentCount = new Dictionary<string, int>();
+        foreach (string citizenID in building.assignedCitizenIDs)
         {
-            citizen.jobSatisfaction -= 10;
-            Debug.Log($"not match：{citizen.mbtiType} not applicable {building.domain}");
+            CitizenData citizen = cityData.GetCitizenByID(citizenID);
+            if (citizen == null) continue;
+
+            if (!temperamentCount.ContainsKey(citizen.temperament))
+                temperamentCount[citizen.temperament] = 0;
+            temperamentCount[citizen.temperament]++;
         }
+
+        foreach (var kvp in temperamentCount)
+        {
+            if (kvp.Value >= 2)
+            {
+                float synergyBuff = 0.1f * (kvp.Value - 1);
+                baseMultiplier += synergyBuff;
+
+                foreach (string citizenID in building.assignedCitizenIDs)
+                {
+                    CitizenData citizen = cityData.GetCitizenByID(citizenID);
+                    if (citizen != null && citizen.temperament == kvp.Key)
+                    {
+                        citizen.jobSatisfaction = Mathf.Min(citizen.jobSatisfaction + 5, 100);
+                    }
+                }
+            }
+        }
+
+        building.productionMultiplier = Mathf.Min(baseMultiplier, 3.0f);
+
+        Debug.Log($"[RecalculateBuff] {building.buildingID} new productionMultiplier: {building.productionMultiplier}");
     }
 
-    public void AssignCitizenToBuilding(CitizenData citizen, BuildingData building)
+    public void AssignCitizenToBuilding(CitizenData citizen, BuildingData newBuilding)
     {
-        citizen.currentBuildingID = building.buildingID;
-
-        if (!building.assignedCitizenIDs.Contains(citizen.citizenID))
+        if (!string.IsNullOrEmpty(citizen.currentBuildingID) && citizen.currentBuildingID != newBuilding.buildingID)
         {
-            building.assignedCitizenIDs.Add(citizen.citizenID);
+            BuildingData oldBuilding = cityData.GetBuildingByID(citizen.currentBuildingID);
+            if (oldBuilding != null)
+            {
+                oldBuilding.assignedCitizenIDs.Remove(citizen.citizenID);
+                RecalculateBuildingBuff(oldBuilding);
+                Debug.Log($"[Assign] Removed {citizen.citizenID} from {oldBuilding.buildingID}");
+            }
         }
 
-        ApplyBuff(citizen, building);
+        citizen.currentBuildingID = newBuilding.buildingID;
+
+        if (!newBuilding.assignedCitizenIDs.Contains(citizen.citizenID))
+        {
+            newBuilding.assignedCitizenIDs.Add(citizen.citizenID);
+        }
+
+        RecalculateBuildingBuff(newBuilding); // 重新计算新建筑buff
         UpdateCitizensUI();
     }
 
@@ -135,7 +181,7 @@ public class CitizenManager : MonoBehaviour
             if (citizen.jobSatisfaction >= 80)
             {
                 citizen.highSatisfactionDays++;
-                Debug.Log("==>FSM: Add SatDay");
+                Debug.Log("==> FSM: Add SatDay");
             }
             else
             {
@@ -155,13 +201,10 @@ public class CitizenManager : MonoBehaviour
         if (citizen.currentState == CitizenState.Promoted)
         {
             Debug.Log("==> FSM: Promoted tick +5 sat");
-            citizen.jobSatisfaction += 5;
+            citizen.jobSatisfaction = Mathf.Min(citizen.jobSatisfaction + 5, 100);
             return;
         }
     }
-
-
-
 
     public void UpdateCitizens()
     {
@@ -172,47 +215,4 @@ public class CitizenManager : MonoBehaviour
 
         UpdateCitizensUI();
     }
-
-
-
-
-    
-
-    public List<CitizenSaveData> GetAllCitizenData()
-    {
-        List<CitizenSaveData> data = new List<CitizenSaveData>();
-        foreach (var c in cityData.citizens)
-        {
-            data.Add(new CitizenSaveData
-            {
-                mbtiType = c.mbtiType,
-                currentBuildingID = c.currentBuildingID,
-                jobSatisfaction = c.jobSatisfaction,
-                highSatisfactionDays = c.highSatisfactionDays,
-                currentState = c.currentState
-            });
-        }
-        return data;
-    }
-
-    public void RestoreCitizensFromData(List<CitizenSaveData> data)
-    {
-        cityData.citizens.Clear();
-
-        foreach (var d in data)
-        {
-            CitizenData c = new CitizenData(d.mbtiType)
-            {
-                currentBuildingID = d.currentBuildingID,
-                jobSatisfaction = d.jobSatisfaction,
-                highSatisfactionDays = d.highSatisfactionDays,
-                currentState = d.currentState
-            };
-
-            cityData.citizens.Add(c);
-        }
-
-        UpdateCitizensUI();
-    }
-
 }

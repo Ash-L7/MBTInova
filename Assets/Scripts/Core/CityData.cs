@@ -12,6 +12,16 @@ public class CityData
 
     public int currentDay = 0;
 
+    public CitizenData GetCitizenByID(string citizenID)
+    {
+        return citizens.Find(c => c.citizenID == citizenID);
+    }
+
+    public BuildingData GetBuildingByID(string buildingID)
+    {
+        return buildings.Find(b => b.buildingID == buildingID);
+    }
+
     public void InitializeDefault()
     {
         resources = new ResourceData();
