@@ -18,6 +18,16 @@ public class CitizenManager : MonoBehaviour
 
     public int recruitCost = 100;
 
+    void Start()
+    {
+        debugPanel = FindObjectOfType<DebugPanelController>();
+    }
+
+    public void SetDebugPanel(DebugPanelController panel)
+    {
+        debugPanel = panel;
+    }
+
     public void Init(CityData data)
     {
         cityData = data;
@@ -214,5 +224,20 @@ public class CitizenManager : MonoBehaviour
         }
 
         UpdateCitizensUI();
+    }
+
+    public static CitizenManager Instance { get; private set; }
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // optional: if you want it to persist across scenes
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }
