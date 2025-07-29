@@ -154,7 +154,7 @@ public class CitizenManager : MonoBehaviour
             newBuilding.assignedCitizenIDs.Add(citizen.citizenID);
         }
 
-        RecalculateBuildingBuff(newBuilding); // 重新计算新建筑buff
+        RecalculateBuildingBuff(newBuilding);
         UpdateCitizensUI();
     }
 

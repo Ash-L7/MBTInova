@@ -7,6 +7,7 @@ public class CityManager : MonoBehaviour
     public void Init(CityData data)
     {
         cityData = data;
+        InvokeRepeating(nameof(UpdateProduction), 5f, 5f);
     }
 
     public int buildingCost = 200;
@@ -51,6 +52,13 @@ public class CityManager : MonoBehaviour
 
     public void UpdateProduction()
     {
+        if (cityData == null)
+        {
+            Debug.LogWarning("CityData is null, skipping production update.");
+            return;
+        }
+
+
         foreach (var building in cityData.buildings)
         {
             float moneyOutput = building.baseMoneyProduction * building.productionMultiplier;
@@ -69,7 +77,6 @@ public class CityManager : MonoBehaviour
 
     void Start()
     {
-        InvokeRepeating(nameof(UpdateProduction), 5f, 5f);
     }
 
 }

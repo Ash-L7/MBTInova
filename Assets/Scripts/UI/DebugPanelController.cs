@@ -44,6 +44,7 @@ public class DebugPanelController : MonoBehaviour
         Debug.Log(">>> Recruit clicked");
         GameManager.Instance.citizenManager.CreateCitizen();
         UpdateResources();
+        CitizenManager.Instance.UpdateCitizensUI();
     }
 
     void OnBuildButtonClicked()
